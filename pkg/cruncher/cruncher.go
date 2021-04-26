@@ -20,6 +20,9 @@ func Crunch(inputString string) (string, error) {
 		PartsAverageTime:      map[int]float64{},
 	}
 
+	// To make sure even Countries and Rocketeers that did't get any work done show up
+	preFillCountriesAndRocketeers(parsedInput, &result)
+
 	wg.Add(3)
 	go calculateCountriesAverage(parsedInput, &result, &wg)
 	go calculateRocketeerAverage(parsedInput, &result, &wg)
@@ -27,6 +30,13 @@ func Crunch(inputString string) (string, error) {
 
 	wg.Wait()
 	return output.SerializeOutput(result), nil
+}
+
+func preFillCountriesAndRocketeers(parsedInput input.Input, result *output.Output) {
+	for key, value := range parsedInput.CrewMembers {
+		result.RocketeersAverageTime[key] = 0.0
+		result.CountriesAverageTime[value] = 0.0
+	}
 }
 
 func calculateCountriesAverage(parsedInput input.Input, result *output.Output, group *sync.WaitGroup) {
@@ -39,7 +49,9 @@ func calculateCountriesAverage(parsedInput input.Input, result *output.Output, g
 	}
 
 	for key := range result.CountriesAverageTime {
-		result.CountriesAverageTime[key] = result.CountriesAverageTime[key] / float64(countryCounter[key])
+		if result.CountriesAverageTime[key] != 0 {
+			result.CountriesAverageTime[key] = result.CountriesAverageTime[key] / float64(countryCounter[key])
+		}
 	}
 }
 
@@ -53,7 +65,9 @@ func calculateRocketeerAverage(parsedInput input.Input, result *output.Output, g
 	}
 
 	for key := range result.RocketeersAverageTime {
-		result.RocketeersAverageTime[key] = result.RocketeersAverageTime[key] / float64(rocketeerCounter[key])
+		if result.RocketeersAverageTime[key] != 0 {
+			result.RocketeersAverageTime[key] = result.RocketeersAverageTime[key] / float64(rocketeerCounter[key])
+		}
 	}
 }
 
