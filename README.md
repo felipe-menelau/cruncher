@@ -7,7 +7,7 @@ Import the lib and call `Crunch` on your code
 
 ```
 var s string
-result := Crunch(s)
+result := cruncher.Crunch(s)
 fmt.Printf("%s", result)
 ```
 Make sure the string is in the format follow the examples in the `examples` folder.
